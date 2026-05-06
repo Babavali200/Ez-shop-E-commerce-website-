@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 2rem auto;">
+    <h2 style="margin-bottom: 2rem;">{% if edit %}Edit Product{% else %}Add New Product{% endif %}</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+            {% for field in form %}
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <div style="color: var(--accent); font-size: 0.8rem; margin-top: 0.3rem;">
+                            {{ field.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary" style="margin-top: 1rem; padding: 1rem;">
+                {% if edit %}Update Product{% else %}Save Product{% endif %}
+            </button>
+        </div>
+    </form>
+</div>
+<script>
+    // Style inputs automatically
+    document.querySelectorAll('input:not([type="file"]):not([type="checkbox"]), select, textarea').forEach(el => {
+        el.classList.add('form-control');
+    });
+</script>
+{% endblock %}

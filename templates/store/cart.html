@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 style="margin-bottom: 2rem;">Your Cart</h2>
+
+{% if cart.items.count > 0 %}
+    <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
+        <div style="flex: 2; min-width: 300px;">
+            {% for item in cart.items.all %}
+                <div class="card" style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem;">
+                    {% if item.product.image %}
+                        <img src="{{ item.product.image.url }}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">
+                    {% else %}
+                        <div style="width: 80px; height: 80px; background: #eee; border-radius: 8px;"></div>
+                    {% endif %}
+                    
+                    <div style="flex: 1;">
+                        <h4 style="margin: 0; font-weight: 600;">{{ item.product.name }}</h4>
+                        <div style="display: flex; align-items: center; gap: 1rem; margin: 0.8rem 0;">
+                            <div style="display: flex; align-items: center; background: #f1f5f9; border-radius: 20px; padding: 2px;">
+                                <form action="{% url 'update_cart_quantity' item.id 'decrement' %}" method="post" style="margin: 0;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn" style="background: transparent; color: var(--text-color); width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; border: none;">-</button>
+                                </form>
+                                <span style="font-weight: 600; min-width: 30px; text-align: center;">{{ item.quantity }}</span>
+                                <form action="{% url 'update_cart_quantity' item.id 'increment' %}" method="post" style="margin: 0;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn" style="background: transparent; color: var(--text-color); width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; border: none;">+</button>
+                                </form>
+                            </div>
+                        </div>
+                        <p style="margin: 0; font-weight: 700; color: var(--primary); font-size: 1.1rem;">${{ item.total_price }}</p>
+                    </div>
+                    
+                    <form action="{% url 'remove_from_cart' item.id %}" method="post" style="margin: 0;">
+                        {% csrf_token %}
+                        <button type="submit" title="Remove Item" style="background: rgba(244, 63, 94, 0.1); color: var(--accent); border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s;">🗑️</button>
+                    </form>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <div style="flex: 1; min-width: 250px;">
+            <div class="card" style="position: sticky; top: 100px;">
+                <h3>Order Summary</h3>
+                <hr style="border: 0; border-top: 1px solid #eee; margin: 1rem 0;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 1rem; font-weight: 600; font-size: 1.2rem;">
+                    <span>Total:</span>
+                    <span>${{ total }}</span>
+                </div>
+                <a href="{% url 'checkout' %}" class="btn btn-primary" style="display: block; text-align: center; width: 100%;">Proceed to Checkout</a>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div class="card" style="text-align: center; padding: 3rem;">
+        <p style="font-size: 1.2rem; color: #666;">Your cart is empty.</p>
+        <a href="{% url 'home' %}" class="btn btn-primary" style="margin-top: 1rem;">Continue Shopping</a>
+    </div>
+{% endif %}
+{% endblock %}

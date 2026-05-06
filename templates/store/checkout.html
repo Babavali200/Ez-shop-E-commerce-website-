@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="display: flex; gap: 2rem; flex-wrap: wrap;">
+    <div style="flex: 2; min-width: 300px;">
+        <div class="card">
+            <h2>Checkout Details</h2>
+            <form method="post" style="margin-top: 1.5rem;">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Full Name</label>
+                    <input type="text" name="full_name" class="form-control" required placeholder="Enter your full name">
+                </div>
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Phone Number</label>
+                    <input type="tel" name="phone" class="form-control" required placeholder="Enter your phone number">
+                </div>
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Delivery Address</label>
+                    <textarea name="address" class="form-control" rows="3" required placeholder="Enter full delivery address (Street, City, Zip)..."></textarea>
+                </div>
+                <!-- Payment gateway mockup -->
+                <div class="form-group" style="margin-top: 1.5rem; background: #fff; padding: 1.5rem; border-radius: 12px; border: 1px solid #e5e7eb; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <label style="font-weight: 600; font-size: 1.1rem; margin: 0;">Payment Information</label>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <!-- Fake card icons -->
+                            <div style="width: 35px; height: 22px; background: #1a1f36; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.6rem; font-weight: bold; font-style: italic;">VISA</div>
+                            <div style="width: 35px; height: 22px; background: #eb001b; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.6rem; font-weight: bold; font-style: italic; position: relative;"><div style="position:absolute; width:12px; height:12px; border-radius:50%; background:#f79e1b; right:6px; mix-blend-mode: multiply;"></div><div style="position:absolute; width:12px; height:12px; border-radius:50%; background:#eb001b; left:6px;"></div></div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: block; margin-bottom: 0.4rem; font-size: 0.85rem; color: #4b5563;">Card Number</label>
+                        <div style="position: relative;">
+                            <input type="text" class="form-control" placeholder="0000 0000 0000 0000" maxlength="19" required style="padding-left: 2.5rem; font-family: monospace; font-size: 1rem;">
+                            <svg style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #9ca3af;" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 1rem;">
+                        <div style="flex: 1;">
+                            <label style="display: block; margin-bottom: 0.4rem; font-size: 0.85rem; color: #4b5563;">Expiry Date</label>
+                            <input type="text" class="form-control" placeholder="MM/YY" maxlength="5" required style="font-family: monospace; font-size: 1rem;">
+                        </div>
+                        <div style="flex: 1;">
+                            <label style="display: block; margin-bottom: 0.4rem; font-size: 0.85rem; color: #4b5563;">CVC</label>
+                            <input type="password" class="form-control" placeholder="123" maxlength="4" required style="font-family: monospace; font-size: 1rem;">
+                        </div>
+                    </div>
+                    <div style="margin-top: 1rem; padding: 0.75rem; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; display: flex; gap: 0.5rem; align-items: center; color: #15803d; font-size: 0.85rem;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                        <span>Payments are secure and encrypted.</span>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1.5rem; padding: 1rem; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    Pay ${{ total }}
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <div style="flex: 1; min-width: 250px;">
+        <div class="card" style="position: sticky; top: 100px;">
+            <h3>Order Summary</h3>
+            <hr style="border: 0; border-top: 1px solid #eee; margin: 1rem 0;">
+            {% for item in cart.items.all %}
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                    <span>{{ item.product.name }} (x{{ item.quantity }})</span>
+                    <span>${{ item.total_price }}</span>
+                </div>
+            {% endfor %}
+            <hr style="border: 0; border-top: 1px solid #eee; margin: 1rem 0;">
+            <div style="display: flex; justify-content: space-between; font-weight: 600; font-size: 1.2rem;">
+                <span>Total:</span>
+                <span>${{ total }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

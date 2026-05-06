@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 style="margin-bottom: 2rem;">My Orders</h2>
+
+{% if orders %}
+    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        {% for order in orders %}
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 1rem; margin-bottom: 1rem;">
+                    <div>
+                        <strong>Order #{{ order.id }}</strong>
+                        <span style="color: #666; font-size: 0.9rem; margin-left: 10px;">{{ order.created_at|date:"M d, Y" }}</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="padding: 5px 10px; border-radius: 20px; font-size: 0.8rem; background: {% if order.status == 'Pending' %}#ffeaa7{% elif order.status == 'Delivered' %}#55efc4{% elif order.status == 'Cancelled' or order.status == 'Rejected' %}#fab1a0{% else %}#81ecec{% endif %}; color: #333;">
+                            {{ order.status }}
+                        </span>
+                        {% if order.status == 'Pending' %}
+                            <form action="{% url 'cancel_order' order.id %}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn" style="background: var(--accent); color: white; padding: 5px 10px; font-size: 0.75rem;">Cancel Order</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem;">
+                    {% for item in order.items.all %}
+                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.95rem;">
+                            <span>{{ item.product.name }} (x{{ item.quantity }})</span>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <span style="font-size: 0.75rem; padding: 2px 8px; border-radius: 10px; background: #f0f0f0; color: #555;">{{ item.status }}</span>
+                                <span>${{ item.price }}</span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; font-weight: 600;">
+                    <span>Total Amount:</span>
+                    <span>${{ order.total_amount }}</span>
+                </div>
+                <div style="margin-top: 1rem; font-size: 0.9rem; color: #666;">
+                    {% if order.full_name %}<div><strong>Name:</strong> {{ order.full_name }}</div>{% endif %}
+                    {% if order.phone_number %}<div><strong>Phone:</strong> {{ order.phone_number }}</div>{% endif %}
+                    <div><strong>Address:</strong> {{ order.address }}</div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="card" style="text-align: center; padding: 3rem;">
+        <p style="font-size: 1.2rem; color: #666;">You haven't placed any orders yet.</p>
+        <a href="{% url 'home' %}" class="btn btn-primary" style="margin-top: 1rem;">Start Shopping</a>
+    </div>
+{% endif %}
+{% endblock %}
