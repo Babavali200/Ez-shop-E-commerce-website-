@@ -29,12 +29,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-placeholder')
 DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
 # Proper ALLOWED_HOSTS for Render
-ALLOWED_HOSTS = [
-    'localhost',
-    '127.0.0.1',
-    '*.onrender.com',
-    'ezshop.onrender.com',
-]
+ALLOWED_HOSTS = ['ez-shop-ecommerce-platform.onrender.com', '*']
 
 # Application definition
 INSTALLED_APPS = [
