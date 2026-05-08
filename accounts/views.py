@@ -25,6 +25,13 @@ def register(request):
         form = CustomUserCreationForm()
     return render(request, 'accounts/register.html', {'form': form})
 
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def admin_dashboard(request):
+    if not request.user.is_superuser:
+        return redirect('home')  # block non-admins
+    return render(request, 'accounts/admin_dashboard.html')
 
 def custom_login(request):
     if request.method == 'POST':
@@ -34,9 +41,10 @@ def custom_login(request):
 
         if user is not None:
             # Admin/superuser → go to admin panel
+            # Admin → go to custom admin dashboard
             if user.is_superuser:
                 login(request, user)
-                return redirect('/admin/')
+                return redirect('admin_dashboard')  # ← change this line
             
             # Seller not approved yet
             elif hasattr(user, 'user_type') and user.user_type == 'seller' and not user.is_approved:
