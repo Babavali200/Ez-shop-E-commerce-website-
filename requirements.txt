@@ -13,3 +13,4 @@ fpdf2==2.7.9
 defusedxml==0.7.1
 fonttools==4.53.0
 packaging==24.0
+cryptography==48.0.0
