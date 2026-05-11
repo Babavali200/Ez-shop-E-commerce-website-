@@ -49,13 +49,29 @@
         font-size: 1.2rem;
         color: var(--accent);
     }
+
+    .shop-header {
+        margin-bottom: 3rem;
+    }
+    .shop-title {
+        font-weight: 300;
+        font-size: 2.5rem;
+    }
+    @media (max-width: 768px) {
+        .shop-header {
+            margin-bottom: 1.5rem;
+        }
+        .shop-title {
+            font-size: 1.8rem;
+        }
+    }
 </style>
 
-<div style="margin-bottom: 3rem;">
+<div class="shop-header">
     {% if query %}
         <h1>Search Results for "<span style="color: var(--primary);">{{ query }}</span>"</h1>
     {% else %}
-        <h1 style="font-weight: 300;">Explore our <span style="font-weight: 600;">Full Collection</span></h1>
+        <h1 class="shop-title">Explore our <span style="font-weight: 600;">Full Collection</span></h1>
     {% endif %}
     <p style="color: #666;">{{ products.count }} products found.</p>
 </div>

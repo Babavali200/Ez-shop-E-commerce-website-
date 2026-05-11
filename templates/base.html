@@ -64,6 +64,47 @@
             align-items: center;
         }
 
+        .nav-toggle {
+            display: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--navbar-text);
+        }
+
+        @media (max-width: 992px) {
+            nav {
+                padding: 0.8rem 1.5rem;
+            }
+            
+            .nav-links {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                height: 100vh;
+                width: 250px;
+                background: var(--navbar-bg);
+                flex-direction: column;
+                padding: 5rem 2rem;
+                transition: right 0.3s ease;
+                z-index: 1001;
+                backdrop-filter: blur(20px);
+                border-left: 1px solid rgba(255,255,255,0.1);
+            }
+
+            .nav-links.active {
+                right: 0;
+            }
+
+            .nav-toggle {
+                display: block;
+                z-index: 1002;
+            }
+
+            .nav-brand {
+                z-index: 1002;
+            }
+        }
+
         .nav-item {
             font-weight: 400;
             transition: color 0.3s;
@@ -106,7 +147,14 @@
         .container {
             max-width: 1200px;
             margin: 2rem auto;
-            padding: 0 1rem;
+            padding: 0 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 1rem auto;
+                padding: 0 1rem;
+            }
         }
 
         /* Card */
@@ -335,6 +383,67 @@
             display: flex;
         }
 
+        /* Search Form Responsive */
+        .search-form {
+            display: flex; 
+            gap: 0.5rem; 
+            flex: 1; 
+            max-width: 400px; 
+            margin: 0 2rem;
+            transition: all 0.3s;
+        }
+
+        .search-input {
+            padding: 0.5rem 1rem; 
+            border-radius: 20px;
+        }
+
+        .search-btn {
+            border-radius: 20px; 
+            padding: 0.5rem 1.2rem; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+        }
+
+        @media (max-width: 768px) {
+            .search-form {
+                margin: 0 0.5rem;
+                max-width: none;
+            }
+            .search-input {
+                font-size: 0.8rem;
+            }
+            .search-btn {
+                padding: 0.5rem 0.8rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            nav {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+                padding: 0.8rem 1rem;
+            }
+            .nav-brand {
+                order: 1;
+            }
+            .nav-toggle {
+                order: 2;
+            }
+            .search-form {
+                order: 3;
+                flex: 0 0 100%;
+                margin: 0.5rem 0 0 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-brand {
+                font-size: 1.2rem;
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -343,9 +452,9 @@
         <a href="{% url 'home' %}" class="nav-brand">EZ Shop</a>
         
         <!-- Search Bar -->
-        <form action="{% url 'shop' %}" method="get" style="display: flex; gap: 0.5rem; flex: 1; max-width: 400px; margin: 0 2rem;">
-            <input type="text" name="q" placeholder="Search products..." class="form-control" style="padding: 0.5rem 1rem; border-radius: 20px;" value="{{ query|default:'' }}">
-            <button type="submit" class="btn btn-primary" style="border-radius: 20px; padding: 0.5rem 1.2rem; display: flex; align-items: center; justify-content: center;">
+        <form action="{% url 'shop' %}" method="get" class="search-form">
+            <input type="text" name="q" placeholder="Search products..." class="form-control search-input" value="{{ query|default:'' }}">
+            <button type="submit" class="btn btn-primary search-btn">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="11" cy="11" r="8"></circle>
                     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
@@ -353,7 +462,15 @@
             </button>
         </form>
 
-        <div class="nav-links">
+        <div class="nav-toggle" id="navToggle">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+        </div>
+
+        <div class="nav-links" id="navLinks">
             <a href="{% url 'home' %}" class="nav-item">Home</a>
             <a href="{% url 'shop' %}" class="nav-item">Shop</a>
             {% if user.is_authenticated %}
@@ -368,7 +485,7 @@
                 {% if user.is_superuser or user.user_type == 'admin' %}
                     <a href="{% url 'admin_dashboard' %}" class="nav-item">Admin</a>
                 {% endif %}
-                <span class="nav-item">Hi, {{ user.username }}</span>
+                <span class="nav-item" style="opacity: 0.7;">Hi, {{ user.username }}</span>
                 
                 <!-- Notification Dropdown -->
                 <div class="notification-dropdown nav-item" id="notifDropdown">
@@ -400,11 +517,11 @@
 
                 <form action="{% url 'logout' %}" method="post" style="display:inline;">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-outline">Logout</button>
+                    <button type="submit" class="btn btn-outline" style="width: 100%;">Logout</button>
                 </form>
             {% else %}
-                <a href="{% url 'login' %}" class="btn btn-outline">Login</a>
-                <a href="{% url 'register' %}" class="btn btn-primary">Register</a>
+                <a href="{% url 'login' %}" class="btn btn-outline" style="width: 100%; text-align: center;">Login</a>
+                <a href="{% url 'register' %}" class="btn btn-primary" style="width: 100%; text-align: center;">Register</a>
             {% endif %}
         </div>
     </nav>
@@ -457,21 +574,35 @@
                 }, 4000);
             });
 
+            // Navbar Toggle
+            const navToggle = document.getElementById('navToggle');
+            const navLinks = document.getElementById('navLinks');
+            
+            if (navToggle) {
+                navToggle.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    navLinks.classList.toggle('active');
+                });
+            }
+
+            // Close nav when clicking outside
+            document.addEventListener('click', (e) => {
+                if (navLinks && navLinks.classList.contains('active') && !navLinks.contains(e.target) && e.target !== navToggle) {
+                    navLinks.classList.remove('active');
+                }
+            });
+
             // Notifications
             const notifDropdown = document.getElementById('notifDropdown');
             const notifList = notifDropdown?.querySelector('.notification-list');
             
             if (notifDropdown) {
-                // If the user hover/clicks the dropdown, we consider it "seen"
-                // But specifically for mobile, toggle behavior
                 notifDropdown.addEventListener('click', (e) => {
-                    if (window.innerWidth < 768) {
+                    if (window.innerWidth < 992) {
                         e.stopPropagation();
                         notifList.style.display = notifList.style.display === 'flex' ? 'none' : 'flex';
                     }
                 });
-
-                // Optional: Mark as read when opened (could be too aggressive, better to have 'Mark all as read')
             }
 
             document.addEventListener('click', () => {

@@ -3,35 +3,107 @@
 <h2 style="margin-bottom: 2rem;">Your Wishlist</h2>
 
 {% if wishlist.items.count > 0 %}
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 2rem;">
+    <div class="wishlist-grid">
         {% for item in wishlist.items.all %}
-            <div class="card">
-                {% if item.product.image %}
-                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px;">
-                {% else %}
-                    <div style="width: 100%; height: 200px; background: #eee; border-radius: 8px; display:flex; align-items:center; justify-content:center; color:#999;">No Image</div>
-                {% endif %}
-                <h3 style="margin: 1rem 0 0.5rem 0;">{{ item.product.name }}</h3>
-                <p style="font-weight: 600; color: var(--accent); margin-bottom: 1rem;">
+            <div class="card wishlist-card">
+                <div class="wishlist-img-wrap">
+                    {% if item.product.image %}
+                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="wishlist-img">
+                    {% else %}
+                        <div class="no-img-placeholder">No Image</div>
+                    {% endif %}
+                </div>
+                <h3 class="wishlist-item-name">{{ item.product.name }}</h3>
+                <p class="wishlist-item-price">
                     ${% if item.product.discount_price %}{{ item.product.discount_price }}{% else %}{{ item.product.price }}{% endif %}
                 </p>
-                <div style="display: flex; gap: 0.5rem;">
-                    <form action="{% url 'add_to_cart' item.product.id %}" method="post" class="ajax-form" style="flex: 1;">
+                <div class="wishlist-actions">
+                    <form action="{% url 'add_to_cart' item.product.id %}" method="post" class="ajax-form action-form">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-primary" style="width: 100%;">Cart</button>
+                        <button type="submit" class="btn btn-primary action-btn">Cart</button>
                     </form>
-                    <form action="{% url 'remove_from_wishlist' item.id %}" method="post" class="ajax-form" style="flex: 1;">
+                    <form action="{% url 'remove_from_wishlist' item.id %}" method="post" class="ajax-form action-form">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-outline" style="width: 100%;">Remove</button>
+                        <button type="submit" class="btn btn-outline action-btn">Remove</button>
                     </form>
                 </div>
             </div>
         {% endfor %}
     </div>
 {% else %}
-    <div class="card" style="text-align: center; padding: 3rem;">
-        <p style="font-size: 1.2rem; color: #666;">Your wishlist is empty.</p>
-        <a href="{% url 'home' %}" class="btn btn-primary" style="margin-top: 1rem;">Continue Shopping</a>
+    <div class="card empty-card">
+        <p>Your wishlist is empty.</p>
+        <a href="{% url 'home' %}" class="btn btn-primary">Continue Shopping</a>
     </div>
 {% endif %}
+
+<style>
+    .wishlist-grid {
+        display: grid; 
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); 
+        gap: 2rem;
+    }
+    .wishlist-card {
+        display: flex;
+        flex-direction: column;
+    }
+    .wishlist-img-wrap {
+        width: 100%; 
+        height: 200px;
+        overflow: hidden;
+        border-radius: 8px;
+    }
+    .wishlist-img {
+        width: 100%; 
+        height: 100%; 
+        object-fit: cover;
+    }
+    .no-img-placeholder {
+        width: 100%; 
+        height: 100%; 
+        background: #eee; 
+        display:flex; 
+        align-items:center; 
+        justify-content:center; 
+        color:#999;
+    }
+    .wishlist-item-name {
+        margin: 1rem 0 0.5rem 0;
+    }
+    .wishlist-item-price {
+        font-weight: 600; 
+        color: var(--accent); 
+        margin-bottom: 1rem;
+    }
+    .wishlist-actions {
+        display: flex; 
+        gap: 0.5rem;
+        margin-top: auto;
+    }
+    .action-form {
+        flex: 1;
+    }
+    .action-btn {
+        width: 100%;
+    }
+    .empty-card {
+        text-align: center; 
+        padding: 3rem;
+    }
+    .empty-card p {
+        font-size: 1.2rem; 
+        color: #666; 
+        margin-bottom: 1rem;
+    }
+
+    @media (max-width: 480px) {
+        .wishlist-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        .wishlist-actions {
+            flex-direction: column;
+        }
+    }
+</style>
 {% endblock %}

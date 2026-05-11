@@ -23,6 +23,34 @@
 
     .product-row:hover { background: #f9fafb; }
     .order-table th { color: #6b7280; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; }
+    
+    .seller-dashboard-grid {
+        display: grid; 
+        grid-template-columns: 1fr 2fr; 
+        gap: 2rem; 
+        align-items: start;
+    }
+    .order-table-container {
+        overflow-x: auto;
+    }
+    @media (max-width: 1200px) {
+        .seller-dashboard-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    @media (max-width: 768px) {
+        .dashboard-header h1 {
+            font-size: 1.5rem;
+        }
+        .order-table th, .order-table td {
+            font-size: 0.75rem !important;
+            padding: 10px 5px !important;
+        }
+        .status-badge {
+            font-size: 0.6rem;
+            padding: 2px 5px;
+        }
+    }
 </style>
 
 <div class="dashboard-header">
@@ -30,9 +58,9 @@
     <p style="color: #666; margin-top: 0.5rem;">Manage your products and fulfill incoming orders efficiently.</p>
 </div>
 
-<div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; align-items: start;">
+<div class="seller-dashboard-grid">
     <!-- My Products Section -->
-    <div>
+    <div class="inventory-section">
         <div class="card" style="padding: 1.5rem; border-radius: 20px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
                 <h3 style="margin: 0; font-size: 1.25rem;">My Inventory</h3>
@@ -47,7 +75,7 @@
                             <div style="font-weight: 600; color: #111827;">{{ product.name }}</div>
                             <div style="font-size: 0.85rem; color: var(--primary); font-weight: 600;">${{ product.price }}</div>
                         </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
                             <div style="display: flex; gap: 10px; align-items: center;">
                                 <span style="font-size: 0.8rem; color: #6b7280;">Stock: <strong>{{ product.stock }}</strong></span>
                                 {% if product.stock > 0 %}
@@ -56,7 +84,7 @@
                                     <span class="status-badge" style="background: #fef2f2; color: #b91c1c; font-size: 0.65rem;">Out of Stock</span>
                                 {% endif %}
                             </div>
-                            <div style="display: flex; gap: 8px;">
+                            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                                 <a href="{% url 'edit_product' product.id %}" style="font-size: 0.8rem; color: #6b7280; text-decoration: underline;">Edit</a>
                                 <form action="{% url 'delete_product' product.id %}" method="post" onsubmit="return confirm('Are you sure you want to delete this product?');" style="margin: 0;">
                                     {% csrf_token %}
@@ -81,54 +109,56 @@
     </div>
     
     <!-- Received Orders Section -->
-    <div>
+    <div class="sales-section">
         <div class="card" style="padding: 1.5rem; border-radius: 20px;">
             <h3 style="margin: 0 0 1.5rem 0; font-size: 1.25rem;">Recent Sales</h3>
             {% if orders %}
-                <table class="order-table" style="width: 100%; border-collapse: collapse; text-align: left;">
-                    <thead>
-                        <tr style="border-bottom: 1px solid #f3f4f6;">
-                            <th style="padding: 12px 10px;">Order</th>
-                            <th style="padding: 12px 10px;">Customer</th>
-                            <th style="padding: 12px 10px;">Items</th>
-                            <th style="padding: 12px 10px;">Status</th>
-                            <th style="padding: 12px 10px;">Manage</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    {% for item in orders %}
-                        <tr style="border-bottom: 1px solid #f3f4f6;">
-                            <td style="padding: 15px 10px; font-size: 0.85rem; font-weight: 600;">#{{ item.order.id }}</td>
-                            <td style="padding: 15px 10px; font-size: 0.85rem;">
-                                <div style="font-weight: 600;">{{ item.order.user.username }}</div>
-                                <div style="font-size: 0.75rem; color: #6b7280;">
-                                    {% if item.order.full_name %}{{ item.order.full_name }} · {% endif %}
-                                    {{ item.order.phone_number|default:"" }}
-                                </div>
-                            </td>
-                            <td style="padding: 15px 10px; font-size: 0.85rem;">
-                                {{ item.product.name }} <span style="color: #9ca3af;">x{{ item.quantity }}</span>
-                            </td>
-                            <td style="padding: 15px 10px;">
-                                <span class="status-badge status-{{ item.status|lower }}">
-                                    {{ item.status }}
-                                </span>
-                            </td>
-                            <td style="padding: 15px 10px;">
-                                <form action="{% url 'update_order_status' item.id %}" method="post" style="display: flex; gap: 5px;">
-                                    {% csrf_token %}
-                                    <select name="status" class="form-control" style="padding: 0.2rem 0.5rem; font-size: 0.75rem; width: auto; border-radius: 8px;">
-                                        {% for code, name in item.order.STATUS_CHOICES %}
-                                            <option value="{{ code }}" {% if item.status == code %}selected{% endif %}>{{ name }}</option>
-                                        {% endfor %}
-                                    </select>
-                                    <button type="submit" class="btn btn-primary" style="padding: 0.2rem 0.6rem; font-size: 0.7rem; border-radius: 8px;">Set</button>
-                                </form>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
+                <div class="order-table-container">
+                    <table class="order-table" style="width: 100%; border-collapse: collapse; text-align: left; min-width: 600px;">
+                        <thead>
+                            <tr style="border-bottom: 1px solid #f3f4f6;">
+                                <th style="padding: 12px 10px;">Order</th>
+                                <th style="padding: 12px 10px;">Customer</th>
+                                <th style="padding: 12px 10px;">Items</th>
+                                <th style="padding: 12px 10px;">Status</th>
+                                <th style="padding: 12px 10px;">Manage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for item in orders %}
+                            <tr style="border-bottom: 1px solid #f3f4f6;">
+                                <td style="padding: 15px 10px; font-size: 0.85rem; font-weight: 600;">#{{ item.order.id }}</td>
+                                <td style="padding: 15px 10px; font-size: 0.85rem;">
+                                    <div style="font-weight: 600;">{{ item.order.user.username }}</div>
+                                    <div style="font-size: 0.75rem; color: #6b7280;">
+                                        {% if item.order.full_name %}{{ item.order.full_name }} · {% endif %}
+                                        {{ item.order.phone_number|default:"" }}
+                                    </div>
+                                </td>
+                                <td style="padding: 15px 10px; font-size: 0.85rem;">
+                                    {{ item.product.name }} <span style="color: #9ca3af;">x{{ item.quantity }}</span>
+                                </td>
+                                <td style="padding: 15px 10px;">
+                                    <span class="status-badge status-{{ item.status|lower }}">
+                                        {{ item.status }}
+                                    </span>
+                                </td>
+                                <td style="padding: 15px 10px;">
+                                    <form action="{% url 'update_order_status' item.id %}" method="post" style="display: flex; gap: 5px;">
+                                        {% csrf_token %}
+                                        <select name="status" class="form-control" style="padding: 0.2rem 0.5rem; font-size: 0.75rem; width: auto; border-radius: 8px;">
+                                            {% for code, name in item.order.STATUS_CHOICES %}
+                                                <option value="{{ code }}" {% if item.status == code %}selected{% endif %}>{{ name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <button type="submit" class="btn btn-primary" style="padding: 0.2rem 0.6rem; font-size: 0.7rem; border-radius: 8px;">Set</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             {% else %}
                 <div style="text-align: center; padding: 4rem; color: #9ca3af;">
                     <p style="font-size: 1.1rem;">Waiting for your first sale...</p>

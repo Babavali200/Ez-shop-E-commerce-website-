@@ -97,6 +97,36 @@
         width: 30px;
         border-radius: 10px;
     }
+
+    @media (max-width: 768px) {
+        .hero-carousel {
+            height: 350px;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+        }
+        .carousel-caption {
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+        }
+        .carousel-caption h2 {
+            font-size: 1.5rem !important;
+        }
+        .carousel-caption p {
+            font-size: 0.9rem !important;
+        }
+        .carousel-dots {
+            right: 20px;
+            bottom: 10px;
+        }
+        .dot {
+            width: 8px;
+            height: 8px;
+        }
+        .dot.active {
+            width: 20px;
+        }
+    }
 </style>
 
 <div class="hero-carousel">
@@ -173,9 +203,9 @@
 </script>
 
 <!-- Secondary Carousels Section -->
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 4rem;">
+<div class="secondary-carousels">
     <!-- Carousel 2: Trending -->
-    <div style="position: relative; height: 350px; border-radius: 25px; overflow: hidden; box-shadow: var(--shadow);">
+    <div class="sec-carousel-item">
         <div class="carousel-inner" id="carouselTrending" style="width: 300%;">
             <div class="carousel-item" style="width: 33.33%;">
                 <div class="carousel-overlay"></div>
@@ -202,7 +232,7 @@
     </div>
 
     <!-- Carousel 3: Categories -->
-    <div style="position: relative; height: 350px; border-radius: 25px; overflow: hidden; box-shadow: var(--shadow);">
+    <div class="sec-carousel-item">
         <div class="carousel-inner" id="carouselCategory" style="width: 300%;">
             <div class="carousel-item" style="width: 33.33%;">
                 <div class="carousel-overlay" style="background: linear-gradient(to top, rgba(79, 70, 229, 0.4), transparent);"></div>
@@ -229,6 +259,31 @@
     </div>
 </div>
 
+<style>
+    .secondary-carousels {
+        display: grid; 
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+        gap: 2rem; 
+        margin-bottom: 4rem;
+    }
+    .sec-carousel-item {
+        position: relative; 
+        height: 350px; 
+        border-radius: 25px; 
+        overflow: hidden; 
+        box-shadow: var(--shadow);
+    }
+    @media (max-width: 768px) {
+        .secondary-carousels {
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .sec-carousel-item {
+            height: 250px;
+        }
+    }
+</style>
+
 <script>
     // Logic for secondary carousels
     let trendSlide = 0;
@@ -250,10 +305,10 @@
 <!-- Electronics Carousel -->
 <div style="margin-bottom: 4rem;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-        <h2 style="margin: 0; font-weight: 600;">Featured Electronics</h2>
+        <h2 class="section-title">Featured Electronics</h2>
         <a href="{% url 'shop' %}?q=electronics" style="color: var(--primary); font-weight: 600;">View All →</a>
     </div>
-    <div style="position: relative; height: 450px; border-radius: 25px; overflow: hidden; box-shadow: var(--shadow);">
+    <div class="featured-carousel-container">
         <div class="carousel-inner" id="carouselElectronics" style="width: 300%;">
             <div class="carousel-item" style="width: 33.33%;">
                 <div class="carousel-overlay"></div>
@@ -286,10 +341,10 @@
 <!-- Home & Living Carousel -->
 <div style="margin-bottom: 4rem;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-        <h2 style="margin: 0; font-weight: 600;">Home & Living</h2>
+        <h2 class="section-title">Home & Living</h2>
         <a href="{% url 'shop' %}?q=home" style="color: var(--primary); font-weight: 600;">View All →</a>
     </div>
-    <div style="position: relative; height: 450px; border-radius: 25px; overflow: hidden; box-shadow: var(--shadow);">
+    <div class="featured-carousel-container">
         <div class="carousel-inner" id="carouselHome" style="width: 300%;">
             <div class="carousel-item" style="width: 33.33%;">
                 <div class="carousel-overlay"></div>
@@ -319,11 +374,66 @@
     </div>
 </div>
 
-<div style="text-align: center; margin: 6rem 0;">
-    <h2 style="font-size: 2.5rem; margin-bottom: 1rem;">Ready to find your style?</h2>
-    <p style="color: #666; margin-bottom: 2rem;">Browse our entire collection of hand-picked products.</p>
-    <a href="{% url 'shop' %}" class="btn btn-primary" style="padding: 1.2rem 3rem; font-size: 1.2rem; border-radius: 50px; box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);">Shop Now</a>
+<div class="cta-section">
+    <h2 class="cta-title">Ready to find your style?</h2>
+    <p class="cta-subtitle">Browse our entire collection of hand-picked products.</p>
+    <a href="{% url 'shop' %}" class="btn btn-primary cta-btn">Shop Now</a>
 </div>
+
+<style>
+    .featured-carousel-container {
+        position: relative; 
+        height: 450px; 
+        border-radius: 25px; 
+        overflow: hidden; 
+        box-shadow: var(--shadow);
+    }
+    .section-title {
+        margin: 0; 
+        font-weight: 600;
+    }
+    .cta-section {
+        text-align: center; 
+        margin: 6rem 0;
+    }
+    .cta-title {
+        font-size: 2.5rem; 
+        margin-bottom: 1rem;
+    }
+    .cta-subtitle {
+        color: #666; 
+        margin-bottom: 2rem;
+    }
+    .cta-btn {
+        padding: 1.2rem 3rem; 
+        font-size: 1.2rem; 
+        border-radius: 50px; 
+        box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);
+    }
+
+    @media (max-width: 768px) {
+        .featured-carousel-container {
+            height: 300px;
+            border-radius: 20px;
+        }
+        .section-title {
+            font-size: 1.2rem;
+        }
+        .cta-section {
+            margin: 3rem 0;
+        }
+        .cta-title {
+            font-size: 1.8rem;
+        }
+        .cta-subtitle {
+            font-size: 0.9rem;
+        }
+        .cta-btn {
+            padding: 1rem 2rem;
+            font-size: 1rem;
+        }
+    }
+</style>
 
 <script>
     // Additional logic for new carousels

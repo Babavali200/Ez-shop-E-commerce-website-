@@ -3,8 +3,8 @@
 <h2 style="margin-bottom: 2rem;">Your Cart</h2>
 
 {% if cart.items.count > 0 %}
-    <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
-        <div style="flex: 2; min-width: 300px;">
+    <div class="cart-container">
+        <div class="cart-items-section">
             {% for item in cart.items.all %}
                 <div class="card" style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem;">
                     {% if item.product.image %}
@@ -39,8 +39,8 @@
             {% endfor %}
         </div>
         
-        <div style="flex: 1; min-width: 250px;">
-            <div class="card" style="position: sticky; top: 100px;">
+        <div class="cart-summary-section">
+            <div class="card summary-card">
                 <h3>Order Summary</h3>
                 <hr style="border: 0; border-top: 1px solid #eee; margin: 1rem 0;">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 1rem; font-weight: 600; font-size: 1.2rem;">
@@ -51,6 +51,48 @@
             </div>
         </div>
     </div>
+
+<style>
+    .cart-container {
+        display: flex; 
+        gap: 2rem; 
+        flex-wrap: wrap;
+    }
+    .cart-items-section {
+        flex: 2; 
+        min-width: 300px;
+    }
+    .cart-summary-section {
+        flex: 1; 
+        min-width: 250px;
+    }
+    .summary-card {
+        position: sticky; 
+        top: 100px;
+    }
+
+    @media (max-width: 992px) {
+        .cart-container {
+            flex-direction: column;
+        }
+        .summary-card {
+            position: static;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .card {
+            padding: 1rem !important;
+        }
+        .card img {
+            width: 60px !important;
+            height: 60px !important;
+        }
+        h4 {
+            font-size: 0.9rem;
+        }
+    }
+</style>
 {% else %}
     <div class="card" style="text-align: center; padding: 3rem;">
         <p style="font-size: 1.2rem; color: #666;">Your cart is empty.</p>

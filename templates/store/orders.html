@@ -3,44 +3,44 @@
 <h2 style="margin-bottom: 2rem;">My Orders</h2>
 
 {% if orders %}
-    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+    <div class="orders-list">
         {% for order in orders %}
-            <div class="card">
-                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 1rem; margin-bottom: 1rem;">
-                    <div>
+            <div class="card order-card">
+                <div class="order-header">
+                    <div class="order-id-wrap">
                         <strong>Order #{{ order.id }}</strong>
-                        <span style="color: #666; font-size: 0.9rem; margin-left: 10px;">{{ order.created_at|date:"M d, Y" }}</span>
+                        <span class="order-date">{{ order.created_at|date:"M d, Y" }}</span>
                     </div>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <span style="padding: 5px 10px; border-radius: 20px; font-size: 0.8rem; background: {% if order.status == 'Pending' %}#ffeaa7{% elif order.status == 'Delivered' %}#55efc4{% elif order.status == 'Cancelled' or order.status == 'Rejected' %}#fab1a0{% else %}#81ecec{% endif %}; color: #333;">
+                    <div class="order-status-actions">
+                        <span class="order-status-badge status-{{ order.status|lower }}">
                             {{ order.status }}
                         </span>
                         {% if order.status == 'Pending' %}
-                            <form action="{% url 'cancel_order' order.id %}" method="post" style="display:inline;">
+                            <form action="{% url 'cancel_order' order.id %}" method="post" class="cancel-form">
                                 {% csrf_token %}
-                                <button type="submit" class="btn" style="background: var(--accent); color: white; padding: 5px 10px; font-size: 0.75rem;">Cancel Order</button>
+                                <button type="submit" class="btn btn-cancel">Cancel</button>
                             </form>
                         {% endif %}
                     </div>
                 </div>
                 
-                <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem;">
+                <div class="order-items">
                     {% for item in order.items.all %}
-                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.95rem;">
-                            <span>{{ item.product.name }} (x{{ item.quantity }})</span>
-                            <div style="display: flex; gap: 10px; align-items: center;">
-                                <span style="font-size: 0.75rem; padding: 2px 8px; border-radius: 10px; background: #f0f0f0; color: #555;">{{ item.status }}</span>
-                                <span>${{ item.price }}</span>
+                        <div class="order-item">
+                            <span class="item-name">{{ item.product.name }} (x{{ item.quantity }})</span>
+                            <div class="item-meta">
+                                <span class="item-status">{{ item.status }}</span>
+                                <span class="item-price">${{ item.price }}</span>
                             </div>
                         </div>
                     {% endfor %}
                 </div>
                 
-                <div style="display: flex; justify-content: space-between; font-weight: 600;">
+                <div class="order-total">
                     <span>Total Amount:</span>
                     <span>${{ order.total_amount }}</span>
                 </div>
-                <div style="margin-top: 1rem; font-size: 0.9rem; color: #666;">
+                <div class="order-details">
                     {% if order.full_name %}<div><strong>Name:</strong> {{ order.full_name }}</div>{% endif %}
                     {% if order.phone_number %}<div><strong>Phone:</strong> {{ order.phone_number }}</div>{% endif %}
                     <div><strong>Address:</strong> {{ order.address }}</div>
@@ -49,9 +49,118 @@
         {% endfor %}
     </div>
 {% else %}
-    <div class="card" style="text-align: center; padding: 3rem;">
-        <p style="font-size: 1.2rem; color: #666;">You haven't placed any orders yet.</p>
-        <a href="{% url 'home' %}" class="btn btn-primary" style="margin-top: 1rem;">Start Shopping</a>
+    <div class="card empty-card">
+        <p>You haven't placed any orders yet.</p>
+        <a href="{% url 'home' %}" class="btn btn-primary">Start Shopping</a>
     </div>
 {% endif %}
+
+<style>
+    .orders-list {
+        display: flex; 
+        flex-direction: column; 
+        gap: 1.5rem;
+    }
+    .order-header {
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        border-bottom: 1px solid #eee; 
+        padding-bottom: 1rem; 
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .order-date {
+        color: #666; 
+        font-size: 0.9rem; 
+        margin-left: 10px;
+    }
+    .order-status-actions {
+        display: flex; 
+        align-items: center; 
+        gap: 10px;
+    }
+    .order-status-badge {
+        padding: 5px 12px; 
+        border-radius: 20px; 
+        font-size: 0.8rem; 
+        background: #eee;
+        color: #333;
+    }
+    .status-pending { background: #ffeaa7; }
+    .status-delivered { background: #55efc4; }
+    .status-cancelled, .status-rejected { background: #fab1a0; }
+    .status-accepted, .status-shipped { background: #81ecec; }
+
+    .btn-cancel {
+        background: var(--accent); 
+        color: white; 
+        padding: 5px 12px; 
+        font-size: 0.75rem;
+        border: none;
+    }
+
+    .order-items {
+        display: flex; 
+        flex-direction: column; 
+        gap: 0.8rem; 
+        margin-bottom: 1rem;
+    }
+    .order-item {
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        font-size: 0.95rem;
+        gap: 10px;
+    }
+    .item-meta {
+        display: flex; 
+        gap: 10px; 
+        align-items: center;
+        flex-shrink: 0;
+    }
+    .item-status {
+        font-size: 0.7rem; 
+        padding: 2px 8px; 
+        border-radius: 10px; 
+        background: #f0f0f0; 
+        color: #555;
+    }
+    .order-total {
+        display: flex; 
+        justify-content: space-between; 
+        font-weight: 600;
+        border-top: 1px solid #eee;
+        padding-top: 1rem;
+    }
+    .order-details {
+        margin-top: 1rem; 
+        font-size: 0.9rem; 
+        color: #666;
+    }
+    .empty-card {
+        text-align: center; 
+        padding: 3rem;
+    }
+
+    @media (max-width: 480px) {
+        .order-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .order-status-actions {
+            width: 100%;
+            justify-content: space-between;
+        }
+        .order-item {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .item-meta {
+            width: 100%;
+            justify-content: space-between;
+        }
+    }
+</style>
 {% endblock %}

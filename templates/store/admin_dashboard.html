@@ -4,108 +4,170 @@
     <h2 style="margin-top: 0;">Admin Dashboard</h2>
     <p style="color: #666;">Monitor user activities and manage access levels.</p>
 
-    <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
-        <div class="card" style="flex: 1; text-align: center; background: #e0e7ff;">
-            <h4 style="margin: 0; color: #4338ca;">Total Products</h4>
-            <div style="font-size: 1.5rem; font-weight: 600;">{{ products_count }}</div>
+    <div class="stats-grid">
+        <div class="card stat-card stat-products">
+            <h4 class="stat-title">Total Products</h4>
+            <div class="stat-value">{{ products_count }}</div>
         </div>
-        <div class="card" style="flex: 1; text-align: center; background: #ecfdf5;">
-            <h4 style="margin: 0; color: #065f46;">Total Orders</h4>
-            <div style="font-size: 1.5rem; font-weight: 600;">{{ orders_count }}</div>
+        <div class="card stat-card stat-orders">
+            <h4 class="stat-title">Total Orders</h4>
+            <div class="stat-value">{{ orders_count }}</div>
         </div>
     </div>
 
     <h3 style="margin-top: 2rem;">Manage Users & Sellers</h3>
 
-    <table style="width: 100%; border-collapse: collapse; margin-top: 1.5rem; text-align: left;">
-        <thead>
-            <tr style="border-bottom: 2px solid #eee;">
-                <th style="padding: 10px;">Username</th>
-                <th style="padding: 10px;">Role</th>
-                <th style="padding: 10px;">Email</th>
-                <th style="padding: 10px;">Status</th>
-                <th style="padding: 10px;">Approval</th>
-                <th style="padding: 10px;">Action</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for u in users_list %}
-            <tr style="border-bottom: 1px solid #eee;">
-                <td style="padding: 10px;"><strong>{{ u.username }}</strong></td>
-                <td style="padding: 10px; text-transform: capitalize;">{{ u.user_type }}</td>
-                <td style="padding: 10px;">{{ u.email|default:"-" }}</td>
-                <td style="padding: 10px;">
-                    {% if u.is_active %}
-                        <span style="color: #10b981; font-weight: 600;">Active</span>
-                    {% else %}
-                        <span style="color: var(--accent); font-weight: 600;">Blocked</span>
-                    {% endif %}
-                </td>
-                <td style="padding: 10px;">
-                    {% if u.user_type == 'seller' %}
-                        {% if u.is_approved %}
-                            <span style="color: #10b981;">Approved</span>
-                        {% else %}
-                            <span style="color: #f59e0b; font-weight: 600;">Pending</span>
-                        {% endif %}
-                    {% else %}
-                        -
-                    {% endif %}
-                </td>
-                <td style="padding: 10px; display: flex; gap: 5px;">
-                    {% if u.user_type == 'seller' and not u.is_approved %}
-                    <form action="{% url 'approve_seller' u.id %}" method="post">
-                        {% csrf_token %}
-                        <button type="submit" class="btn" style="background: #10b981; color: white; padding: 0.3rem 0.6rem; font-size: 0.8rem; border: none;">Approve</button>
-                    </form>
-                    {% endif %}
-                    
-                    <form action="{% url 'toggle_user_status' u.id %}" method="post">
-                        {% csrf_token %}
+    <div class="table-responsive">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Role</th>
+                    <th>Email</th>
+                    <th>Status</th>
+                    <th>Approval</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for u in users_list %}
+                <tr>
+                    <td><strong>{{ u.username }}</strong></td>
+                    <td style="text-transform: capitalize;">{{ u.user_type }}</td>
+                    <td>{{ u.email|default:"-" }}</td>
+                    <td>
                         {% if u.is_active %}
-                            <button type="submit" class="btn" style="background: var(--accent); color: white; padding: 0.3rem 0.6rem; font-size: 0.8rem; border: none;">Block</button>
+                            <span class="status-active">Active</span>
                         {% else %}
-                            <button type="submit" class="btn" style="background: #10b981; color: white; padding: 0.3rem 0.6rem; font-size: 0.8rem; border: none;">Unblock</button>
+                            <span class="status-blocked">Blocked</span>
                         {% endif %}
-                    </form>
-                </td>
-            </tr>
-        {% empty %}
-            <tr>
-                <td colspan="6" style="padding: 10px; text-align: center; color: #666;">No users found.</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+                    </td>
+                    <td>
+                        {% if u.user_type == 'seller' %}
+                            {% if u.is_approved %}
+                                <span class="status-active">Approved</span>
+                            {% else %}
+                                <span class="status-pending">Pending</span>
+                            {% endif %}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            {% if u.user_type == 'seller' and not u.is_approved %}
+                            <form action="{% url 'approve_seller' u.id %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-approve">Approve</button>
+                            </form>
+                            {% endif %}
+                            
+                            <form action="{% url 'toggle_user_status' u.id %}" method="post">
+                                {% csrf_token %}
+                                {% if u.is_active %}
+                                    <button type="submit" class="btn btn-block">Block</button>
+                                {% else %}
+                                    <button type="submit" class="btn btn-unblock">Unblock</button>
+                                {% endif %}
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="6" class="empty-msg">No users found.</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <div class="card" style="margin-top: 2rem;">
     <h3 style="margin-top: 0;">Recent Orders Monitoring</h3>
-    <table style="width: 100%; border-collapse: collapse; margin-top: 1rem; text-align: left;">
-        <thead>
-            <tr style="border-bottom: 2px solid #eee;">
-                <th style="padding: 10px;">ID</th>
-                <th style="padding: 10px;">User</th>
-                <th style="padding: 10px;">Total</th>
-                <th style="padding: 10px;">Status</th>
-                <th style="padding: 10px;">Date</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for o in recent_orders %}
-            <tr style="border-bottom: 1px solid #eee;">
-                <td style="padding: 10px;">#{{ o.id }}</td>
-                <td style="padding: 10px;">{{ o.user.username }}</td>
-                <td style="padding: 10px;">${{ o.total_amount }}</td>
-                <td style="padding: 10px;">{{ o.status }}</td>
-                <td style="padding: 10px;">{{ o.created_at|date:"M d, Y" }}</td>
-            </tr>
-        {% empty %}
-            <tr>
-                <td colspan="5" style="padding: 10px; text-align: center; color: #666;">No orders yet.</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    <div class="table-responsive">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>User</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for o in recent_orders %}
+                <tr>
+                    <td>#{{ o.id }}</td>
+                    <td>{{ o.user.username }}</td>
+                    <td>${{ o.total_amount }}</td>
+                    <td>{{ o.status }}</td>
+                    <td>{{ o.created_at|date:"M d, Y" }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="5" class="empty-msg">No orders yet.</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
+
+<style>
+    .stats-grid {
+        display: flex; 
+        gap: 1rem; 
+        margin-top: 1.5rem;
+    }
+    .stat-card {
+        flex: 1; 
+        text-align: center;
+        padding: 1.5rem !important;
+    }
+    .stat-products { background: #e0e7ff !important; }
+    .stat-orders { background: #ecfdf5 !important; }
+    .stat-title { margin: 0; color: #4338ca; }
+    .stat-value { font-size: 1.5rem; font-weight: 600; }
+    
+    .table-responsive {
+        overflow-x: auto;
+        margin-top: 1.5rem;
+    }
+    .admin-table {
+        width: 100%; 
+        border-collapse: collapse; 
+        text-align: left;
+        min-width: 700px;
+    }
+    .admin-table th, .admin-table td {
+        padding: 12px 10px;
+        border-bottom: 1px solid #eee;
+    }
+    .admin-table th {
+        border-bottom: 2px solid #eee;
+        color: #666;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+    }
+    .status-active { color: #10b981; font-weight: 600; }
+    .status-blocked { color: var(--accent); font-weight: 600; }
+    .status-pending { color: #f59e0b; font-weight: 600; }
+    .empty-msg { text-align: center; color: #666; padding: 2rem !important; }
+    .action-buttons { display: flex; gap: 5px; }
+    .btn-approve { background: #10b981; color: white; padding: 0.3rem 0.6rem; font-size: 0.8rem; border: none; }
+    .btn-block { background: var(--accent); color: white; padding: 0.3rem 0.6rem; font-size: 0.8rem; border: none; }
+    .btn-unblock { background: #10b981; color: white; padding: 0.3rem 0.6rem; font-size: 0.8rem; border: none; }
+
+    @media (max-width: 768px) {
+        .stats-grid {
+            flex-direction: column;
+        }
+        .admin-table th, .admin-table td {
+            font-size: 0.8rem;
+            padding: 8px 5px;
+        }
+    }
+</style>
 {% endblock %}

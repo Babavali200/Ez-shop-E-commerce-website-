@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
-<div style="display: flex; gap: 2rem; flex-wrap: wrap;">
-    <div style="flex: 2; min-width: 300px;">
+<div class="checkout-container">
+    <div class="checkout-form-section">
         <div class="card">
             <h2>Checkout Details</h2>
             <form method="post" style="margin-top: 1.5rem;">
@@ -61,8 +61,8 @@
         </div>
     </div>
     
-    <div style="flex: 1; min-width: 250px;">
-        <div class="card" style="position: sticky; top: 100px;">
+    <div class="checkout-summary-section">
+        <div class="card summary-card-sticky">
             <h3>Order Summary</h3>
             <hr style="border: 0; border-top: 1px solid #eee; margin: 1rem 0;">
             {% for item in cart.items.all %}
@@ -77,6 +77,43 @@
                 <span>${{ total }}</span>
             </div>
         </div>
+        </div>
     </div>
 </div>
+
+<style>
+    .checkout-container {
+        display: flex; 
+        gap: 2rem; 
+        flex-wrap: wrap;
+    }
+    .checkout-form-section {
+        flex: 2; 
+        min-width: 300px;
+    }
+    .checkout-summary-section {
+        flex: 1; 
+        min-width: 250px;
+    }
+    .summary-card-sticky {
+        position: sticky; 
+        top: 100px;
+    }
+
+    @media (max-width: 992px) {
+        .checkout-container {
+            flex-direction: column;
+        }
+        .summary-card-sticky {
+            position: static;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .card {
+            padding: 1rem !important;
+        }
+        h2 { font-size: 1.4rem; }
+    }
+</style>
 {% endblock %}

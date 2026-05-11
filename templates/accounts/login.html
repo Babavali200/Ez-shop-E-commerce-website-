@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="card" style="max-width: 400px; margin: 4rem auto;">
+<div class="auth-card card">
     <h2 style="text-align: center; margin-bottom: 2rem;">Login</h2>
     <form method="post">
         {% csrf_token %}
@@ -34,4 +34,17 @@
         <a href="{% url 'password_reset' %}" style="color: var(--primary);">Forgot Password?</a>
     </p>
 </div>
+
+<style>
+    .auth-card {
+        max-width: 400px; 
+        margin: 4rem auto;
+    }
+    @media (max-width: 480px) {
+        .auth-card {
+            margin: 2rem auto;
+            padding: 1.5rem !important;
+        }
+    }
+</style>
 {% endblock %}
